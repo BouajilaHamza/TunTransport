@@ -11,8 +11,13 @@ class SrtmSpider(scrapy.Spider):
         for agence in agences :
             url = agence.xpath('a/@href').get()
             name = agence.xpath('a/text()').get()
-            print(url)
-            yield scrapy.Request(url, callback=self.parse_agence, meta={"name":name})
+            if name.lower() in ['agence houmt souk',"agence midoun"] :
+                name = "Djerba"
+            self.logger.info(f"{name.lower()}\t{self.depart.lower()}\t{self.depart.lower() in name.lower()}")
+            if self.depart.lower() in name.lower():
+                print(url)
+                yield scrapy.Request(url, callback=self.parse_agence, meta={"name":name})
+                break
     
     
     def parse_agence(self, response):
@@ -23,10 +28,16 @@ class SrtmSpider(scrapy.Spider):
         for idx,agency in enumerate(agency_names):
             for row in rows:
                 hour = row.xpath(f'./td[{idx}]/text()').get()
-                yield {
-                    "depart":response.meta["name"],
-                    "destination":agency,
-                    "hour":hour 
-                }
+                
+                self.logger.info(f"{agency.lower()}\t{self.destination.lower()}\t{self.destination.lower() in agency.lower()}")
+                if hour != None and self.destination.lower() in agency.lower():
+                    yield {
+                        "company":"SRTM",
+                        "depart":response.meta["name"],
+                        "destination":agency.replace('Agence',"").strip(),
+                        "depart_time":hour ,
+                        "arrive_time":None,
+                        "price":None
+                    }
         
             

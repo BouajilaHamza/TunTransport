@@ -97,9 +97,10 @@ class SoretrasSpider(scrapy.Spider):
 
         for tr in table[2:]:
             yield {
-                "depart": tr.xpath(".//td[1]/text()").get(),
-                "arrivé": tr.xpath(".//td[2]/text()").get(),
-                "prix": tr.xpath(".//td[3]/text()").get(),
+                "company": "Soretras",
+                "depart_time": tr.xpath(".//td[1]/text()").get(),
+                "arrive_time": tr.xpath(".//td[2]/text()").get(),
+                "price": tr.xpath(".//td[3]/text()").get(),
             }
 
         

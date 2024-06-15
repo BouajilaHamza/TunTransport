@@ -32,12 +32,15 @@ class MongoDBPipeline:
         self.client = MongoClient('mongodb://localhost:27017/')
         self.db = self.client['Transport']
         self.collection = self.db[spider.name]
-        self.tarif = self.db['tarif']
+        self.tarif_soretras = self.db['tarif_soretras']
+        self.tarif_srtm = self.db['tarif_srtm']
     def close_spider(self, spider):
         self.client.close()
 
     def process_item(self, item, spider):
         if spider.name == "soretras":
-            self.tarif.insert_one(ItemAdapter(item).asdict())
+            self.tarif_soretras.insert_one(ItemAdapter(item).asdict())
+        elif spider.name == "srtm":
+            self.tarif_srtm.insert_one(ItemAdapter(item).asdict())
         # self.collection.insert_one(ItemAdapter(item).asdict())
         return item
