@@ -7,10 +7,37 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import re
+from pymongo import MongoClient
 
-class TransportPipeline:
+class SNTRItPipeline:
     def process_item(self, item, spider):
         item["Depart"] = item["Depart"].replace("%20", " ")
         item["Destination"] = item["Destination"].replace("%20", " ")
         item['Price'] = re.sub(r'[^\d.]', '', item['Price'])
+        return item
+
+class SoretrasPipeline:
+    def process_item(self, item, spider):
+        item['Price'] = re.sub(r'[^\d.]', '', item['Price'])
+        return item
+
+class SRTMPipeline:
+    def process_item(self, item, spider):
+        item['Price'] = re.sub(r'[^\d.]', '', item['Price'])
+        return item
+    
+
+class MongoDBPipeline:
+    def open_spider(self, spider):
+        self.client = MongoClient('mongodb://localhost:27017/')
+        self.db = self.client['Transport']
+        self.collection = self.db[spider.name]
+        self.tarif = self.db['tarif']
+    def close_spider(self, spider):
+        self.client.close()
+
+    def process_item(self, item, spider):
+        if spider.name == "soretras":
+            self.tarif.insert_one(ItemAdapter(item).asdict())
+        # self.collection.insert_one(ItemAdapter(item).asdict())
         return item
