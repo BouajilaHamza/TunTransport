@@ -42,5 +42,7 @@ class MongoDBPipeline:
             self.tarif_soretras.insert_one(ItemAdapter(item).asdict())
         elif spider.name == "srtm":
             self.tarif_srtm.insert_one(ItemAdapter(item).asdict())
+        elif spider.name == "srtg":
+            self.collection.insert_one(ItemAdapter(item).asdict())
         # self.collection.insert_one(ItemAdapter(item).asdict())
         return item
