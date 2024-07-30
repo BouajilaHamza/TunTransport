@@ -6,13 +6,18 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import logging
+from pymongo import MongoClient
+
+logger = logging.getLogger('scrapy')
+client = MongoClient('mongodb://localhost:27017/')
 
 BOT_NAME = "transport"
-
 SPIDER_MODULES = ["transport.spiders"]
 NEWSPIDER_MODULE = "transport.spiders"
-
-
+client['Transport']["Places"].drop()
+client.close()
+logger.info("Collection Places dropped ...!!!")
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "transport (+http://www.yourdomain.com)"
 

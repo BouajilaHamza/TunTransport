@@ -31,18 +31,24 @@ class MongoDBPipeline:
     def open_spider(self, spider):
         self.client = MongoClient('mongodb://localhost:27017/')
         self.db = self.client['Transport']
-        self.collection = self.db[spider.name]
-        self.tarif_soretras = self.db['tarif_soretras']
-        self.tarif_srtm = self.db['tarif_srtm']
+        self.collection = self.db["Places"]
+        self.tarif_collection = self.db['Tarif']
+        self.deps_collection = self.db['Destinations']
+
     def close_spider(self, spider):
         self.client.close()
 
     def process_item(self, item, spider):
-        if spider.name == "soretras":
-            self.tarif_soretras.insert_one(ItemAdapter(item).asdict())
-        elif spider.name == "srtm":
-            self.tarif_srtm.insert_one(ItemAdapter(item).asdict())
-        elif spider.name == "srtg":
+        # if spider.name == "soretras":
+        #     self.tarif_soretras.insert_one(ItemAdapter(item).asdict())
+        # elif spider.name == "srtm":
+        #     self.tarif_srtm.insert_one(ItemAdapter(item).asdict())
+        # elif spider.name == "srtg":
+        if spider.name == "dests":
             self.collection.insert_one(ItemAdapter(item).asdict())
+        elif spider.name == "deps":
+            self.deps_collection.insert_one(ItemAdapter(item).asdict())
+        else:
+            self.tarif_collection.insert_one(ItemAdapter(item).asdict())
         # self.collection.insert_one(ItemAdapter(item).asdict())
         return item

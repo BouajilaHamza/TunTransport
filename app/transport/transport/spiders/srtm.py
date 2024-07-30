@@ -4,7 +4,7 @@ import scrapy
 class SrtmSpider(scrapy.Spider):
     name = "srtm"
     allowed_domains = ["srtm.tn"]
-    start_urls = ["https://srtm.tn"]
+    start_urls = ["https://srtm.tn/?lang=ar"]
 
     def parse(self, response):
         agences = response.xpath('//*[@id="nav"]/li[3]/ul/li')

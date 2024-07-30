@@ -32,7 +32,6 @@ class SrtgSpider(scrapy.Spider):
         if response.json()["status"]:
             for dest in response.json()["stations"]:
                 if self.destination in dest["titre_ar"]:
-                
                     self.selectedarr = dest["id"]
         else:
             self.stationsarr = {}
