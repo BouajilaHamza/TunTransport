@@ -1,4 +1,8 @@
 import requests
+import streamlit as st
+
+
+
 
 def translate(text):
     text = text.replace(' ', '%20')
@@ -30,3 +34,9 @@ def translate(text):
     response = requests.request("POST", url, headers=headers, data=payload)
     translated = response.json()[0]["translations"][0]["text"]
     return translated
+
+# @st.cache_resource(show_spinner=False)
+def clean_filter(_collection,filter):
+    raw_data = list(_collection.find(filter))
+    clean_data = [i["Name"] for i in raw_data]
+    return raw_data,clean_data

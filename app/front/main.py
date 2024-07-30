@@ -1,54 +1,77 @@
-import time
 import streamlit as st
-from pymongo import MongoClient
-import requests 
-import json
-import pandas as pd
+from utils.database import init_mongo,get_dests_from_mongo
+from utils.scraping import get_departs,get_available_destinations
+from utils.ETL import clean_filter
 
-client = MongoClient('mongodb://localhost:27017/')
-db = client['Transport']
-collection = db["Places"]
-dests = db["Destinations"]
-# Streamlit UI
+collection , dests = init_mongo()
+raw_data,data = clean_filter(collection,{})
 st.title("Transport Booking System")
-selected_companies = st.multiselect("Select Departure Time", ["SRTM", "SRTG", "Soretras"])
-filter = {"Company": {"$in": selected_companies}} if selected_companies else {}
-raw_data = list(collection.find(filter))
-data = [i["Name"] for i in raw_data]
-if len(data) == 0:
-    with st.spinner("Getting data from the web ..."):
-        url = "http://localhost:6800/schedule.json"
-        payload = {
-            'project': 'default',
-            'spider': 'dests',
-        }
-        response = requests.post(url, data=payload)
-        time.sleep(15)
-    
-# Select box for departures
-selected_departure = st.selectbox("Select Departure Time", data)
-# Conditional select box for destinations
-if selected_departure:
-    with st.spinner("Loading Destinations ..."):
-        dests.drop()
-        selected_dict = [i for i in raw_data if i["Name"]==selected_departure][0]
+selected_companies = st.multiselect("Select Company", ["SRTM", "SRTG", "Soretras"])
+if selected_companies:
+    filter = {"Company": {"$in": selected_companies}} if selected_companies else {}
+    raw_data,data = clean_filter(collection,filter)
+    if len(data) == 0:
+        st.info("No data available for the selected companies We will get the data from the web")
+        with st.spinner("Getting data from the web ..."):
+            get_departs()
+            raw_data,data = clean_filter(collection,filter)
+            selected_departure = st.selectbox("Select Departure Station", data,key="depart")
+            if selected_departure:
+                
+                selected_dict = [i for i in raw_data if i["Name"]==selected_departure]
+                if len(selected_dict) == 0:
+                    st.info(selected_dict)
+                else:
+                    selected_dict = selected_dict[0]
+                raw_dests,clean_dests = get_dests_from_mongo(dests, selected_dict, selected_companies)
+                selected_dests = st.selectbox("Select Destination", clean_dests)
+    else:
+        selected_departure = st.selectbox("Select Departure Station", data,key="depart")
+        if selected_departure:
+            selected_dict = [i for i in raw_data if i["Name"]==selected_departure]
+            if len(selected_dict) == 0:
+                st.info(selected_dict)
+            else:
+                selected_dict = selected_dict[0]
+            raw_dests,clean_dests = get_dests_from_mongo(dests, selected_dict, selected_companies)
+            selected_dests = st.selectbox("Select Destination", clean_dests)
+# submit = st.button("Get Data")
 
-        url = "http://localhost:6800/schedule.json"
-        payload = {
-            'project': 'default',
-            'spider': 'deps',
-            "depart":selected_departure,
-            "dep_id":selected_dict["Id"],
-            "Company":selected_dict["Company"]
-        }
-        response = requests.post(url, data=payload)
-        time.sleep(10)
-    dests =list(dests.find({},{"_id":0}))
-    dests = [i["Name"] for i in dests]
+
+    #     with st.spinner("Loading Destinations ..."):
+#         dests.drop()
+#         selected_dict = [i for i in raw_data if i["Name"]==selected_departure][0]
+#         get_available_destinations(selected_departure, selected_dict["Id"], selected_dict["Company"])
+
+#     dests =list(dests.find({},{"_id":0}))
+#     dests = [i["Name"] for i in dests]
+    
+    
+    
+    
+    
+    
+    
     # dests = dests[dests["Company"]==company]
     # dests = dests["Name"].unique()
     # dests = list(dests)
-    selected_destination = st.selectbox(f"Select Destination for ".join(selected_companies), dests)
+    # selected_destination = st.selectbox(f"Select Destination for ".join(selected_companies), dests)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #     if selected_destination:
     #         url = f"http://localhost:6800/schedule.json"
     #         data = {
