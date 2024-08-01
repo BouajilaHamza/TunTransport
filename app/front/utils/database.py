@@ -10,6 +10,7 @@ def init_mongo():
     db = client['Transport']
     collection = db["Places"]
     dests = db["Destinations"]
+    tarif_collecion = db["Tarifs"]
     return collection, dests
 
 

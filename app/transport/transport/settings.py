@@ -9,15 +9,15 @@
 import logging
 from pymongo import MongoClient
 
-logger = logging.getLogger('scrapy')
+# logger = logging.getLogger('scrapy')
 client = MongoClient('mongodb://localhost:27017/')
 
 BOT_NAME = "transport"
 SPIDER_MODULES = ["transport.spiders"]
 NEWSPIDER_MODULE = "transport.spiders"
 client['Transport']["Places"].drop()
-client.close()
-logger.info("Collection Places dropped ...!!!")
+# client.close()
+# logger.info("Collection Places dropped ...!!!")
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "transport (+http://www.yourdomain.com)"
 
@@ -37,7 +37,7 @@ ROBOTSTXT_OBEY = False
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
-SPLASH_URL = 'http://localhost:8050'
+# SPLASH_URL = 'http://localhost:8050'
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -50,18 +50,18 @@ SPLASH_URL = 'http://localhost:8050'
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-SPIDER_MIDDLEWARES = {
-    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
-}
-DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
-HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+# SPIDER_MIDDLEWARES = {
+#     'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+# }
+# DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+# HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy_splash.SplashCookiesMiddleware': 723,
-    'scrapy_splash.SplashMiddleware': 725,
+    # 'scrapy_splash.SplashCookiesMiddleware': 723,
+    # 'scrapy_splash.SplashMiddleware': 725,
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
 }
 

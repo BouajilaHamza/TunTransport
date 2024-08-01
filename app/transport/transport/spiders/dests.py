@@ -21,7 +21,7 @@ class DestsSpider(scrapy.Spider):
             if "soretras" in url:
                 yield scrapy.Request(url, callback=self.parse_soretras)
             elif "srtgouafel" in url:
-                yield scrapy.Request(url, callback=self.parse_srtgouafel)
+                yield scrapy.Request(url, callback=self.parse_srtgouafel,headers=self.headers)
             elif "srtm" in url:
                 yield scrapy.Request(url, callback=self.parse_srtm)
 
@@ -33,6 +33,7 @@ class DestsSpider(scrapy.Spider):
             depart.xpath('.//text()').get(): depart.xpath('.//@value').get()
             for depart in departs if depart.xpath('.//@value').get() != '0'
         }
+
         for k,v in departs.items():
             if v == '1':
                 v = "a"
