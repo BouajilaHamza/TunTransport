@@ -1,9 +1,12 @@
 import streamlit as st
 from utils.database import init_mongo,get_dests_from_mongo
-from utils.scraping import get_departs,get_available_destinations
+from utils.scraping import get_departs,get_tarifs,wait_for_spider
 from utils.ETL import clean_filter
+import pandas as pd
 
-collection , dests = init_mongo()
+
+
+collection , dests,tarif_collection = init_mongo()
 raw_data,data = clean_filter(collection,{})
 st.title("Transport Booking System")
 selected_companies = st.multiselect("Select Company", ["SRTM", "SRTG", "Soretras"])
@@ -34,8 +37,25 @@ if selected_companies:
             else:
                 selected_dict = selected_dict[0]
             raw_dests,clean_dests = get_dests_from_mongo(dests, selected_dict, selected_companies)
-            selected_dests = st.selectbox("Select Destination", clean_dests)
-# submit = st.button("Get Data")
+            selected_dest = st.selectbox("Select Destination", clean_dests)
+
+            # submit = st.button("Get Data")
+            
+            if selected_dest :
+                selected_dest_dicts = [i for i in raw_dests if i["Name"]==selected_dest]
+                if len(selected_dest_dicts) == 0:
+                    st.info("No data available for the selected destination")
+                else:
+                    with st.spinner("Getting Tarification from the web ..."):
+                        selected_dest_dict = selected_dest_dicts[0]
+                        response = get_tarifs(selected_dest_dict["Name"], selected_dest_dict["Id"], selected_dest_dict["Company"])
+                        wait_for_spider(response)
+                        _,_,tarif_collection=init_mongo()
+                        l=list(tarif_collection.find({},{"_id":0}))
+                        df = pd.DataFrame(l)
+                        with st.container():
+                            st.dataframe(df,hide_index=True,use_container_width=True)
+
 
 
     #     with st.spinner("Loading Destinations ..."):

@@ -4,14 +4,14 @@ from utils.ETL import clean_filter
 from utils.scraping import get_available_destinations
 
 
-@st.cache_resource(show_spinner=False)
+# @st.cache_resource(show_spinner=False)
 def init_mongo():
     client = MongoClient('mongodb://localhost:27017/')
     db = client['Transport']
     collection = db["Places"]
     dests = db["Destinations"]
-    tarif_collecion = db["Tarifs"]
-    return collection, dests
+    tarif_collecion = db["Tarif"]
+    return collection, dests,tarif_collecion
 
 
 
