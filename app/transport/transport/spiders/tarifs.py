@@ -16,7 +16,7 @@ class TarifsSpider(scrapy.Spider):
         if self.Company == "SRTG":
             yield scrapy.Request(f"https://api.srtgouafel.com.tn/api/liste_by_station?st1={self.depart['Id']}&st2={self.destination['Id']}", headers=self.headers,callback=self.parse_srtg)
         if self.Company == "SRTM":
-            yield scrapy.Request(self.destination['Id'],callback=self.parse_srtm)
+            yield scrapy.Request(self.depart['Id'],callback=self.parse_srtm)
             
         if self.Company == "Soretras":
           url = f"https://soretras.com.tn/pages/abonnementstarifreg2/{self.destination['Id']}"
@@ -62,6 +62,7 @@ class TarifsSpider(scrapy.Spider):
                     "company": "SRTG",
                     "depart_time": voy["depart"],
                     "arrive_time": voy["arr"],
+                    "price": "Non Disponible",
                     "depart": self.depart['Name'],
                     "destination": self.destination['Name'], 
                 } 
@@ -69,8 +70,24 @@ class TarifsSpider(scrapy.Spider):
     
     
     def parse_srtm(self, response):
-      pass
-    
+        table = response.xpath('//*[contains(@id, "tablepress")]')
+        agency_names = table.xpath('./thead/tr/th/text()').getall()
+        rows = table.xpath('./tbody/tr')
+        for idx,agency in enumerate(agency_names):
+            for row in rows:
+                hour = row.xpath(f'./td[{idx}]/text()').get()    
+                # self.logger.info(f"{agency.lower()}\t{self.destination['Name'].lower()}\t{self.destination['Name'].lower() in agency.lower()}")
+                if hour != None and self.destination["Name"].lower() in agency.lower():
+                    yield {
+                        "company":"SRTM",
+                        "depart_time":hour ,
+                        "arrive_time":None,
+                        "price":"Non Disponible",
+                        "depart":self.depart['Name'],
+                        "destination":self.destination["Name"],
+                    }
+            
+
     
     
     

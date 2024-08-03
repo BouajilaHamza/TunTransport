@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 from utils.database import init_mongo,get_dests_from_mongo
 from utils.scraping import get_departs,get_tarifs,wait_for_spider
@@ -9,6 +10,8 @@ st.set_page_config(page_title="Transport Booking System", page_icon="🚗", layo
 collection , dests,tarif_collection = init_mongo()
 raw_data,data = clean_filter(collection,{})
 st.title("Transport Booking System 🚗")
+st.write("This is a simple web application that allows you to book your transport ticket online")
+st.write("The data is fetshed directly from the companies **Official** websites")
 selected_companies = st.multiselect("Select Company", ["SRTM", "SRTG", "Soretras"])
 if selected_companies:
     filter = {"Company": {"$in": selected_companies}} if selected_companies else {}
@@ -60,83 +63,31 @@ if selected_companies:
                         with st.container():
                             st.dataframe(df,hide_index=True,use_container_width=True)
 
-
-
-    #     with st.spinner("Loading Destinations ..."):
-#         dests.drop()
-#         selected_dict = [i for i in raw_data if i["Name"]==selected_departure][0]
-#         get_available_destinations(selected_departure, selected_dict["Id"], selected_dict["Company"])
-
-#     dests =list(dests.find({},{"_id":0}))
-#     dests = [i["Name"] for i in dests]
-    
-    
-    
-    
-    
-    
-    
-    # dests = dests[dests["Company"]==company]
-    # dests = dests["Name"].unique()
-    # dests = list(dests)
-    # selected_destination = st.selectbox(f"Select Destination for ".join(selected_companies), dests)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    #     if selected_destination:
-    #         url = f"http://localhost:6800/schedule.json"
-    #         data = {
-    #             'project': 'default',
-    #             'spider': company.lower(),
-    #             "depart":selected_departure,
-    #             "destination":selected_destination
-    #         }
-    #         requests.post(url, data=data)
-    #         tarif = pd.DataFrame(list(db[f"tarif_{company.lower()}"].find({},{"_id":0})))
-    #         st.write(tarif)
-    #         db[f"tarif_{company.lower()}"].delete_many({})
-    # available_destinations = destinations_map[selected_departure]
-#     selected_destination = st.selectbox("Select Destination", available_destinations)
-
-# Display selected values
-# if st.button("Submit"):
-#     st.write(f"You selected: Departure - {selected_departure}, Destination - {selected_destination}")
-# if st.button("Get Data"):
-
-#     url = "http://localhost:6800/schedule.json"
-#     data_soretras = {
-#         'project': 'default',
-#         'spider': 'soretras',
-#         "depart":depart,
-#         "destination":destination
-#     }
-#     data_srtm = {
-#         'project': 'default',
-#         'spider': 'srtm',
-#         "depart":depart,
-#         "destination":destination
-#     }
-#     requests.post(url, data=data_soretras)
-#     requests.post(url, data=data_srtm)
-# soretras = pd.DataFrame(list(tarif_soretras.find({},{"_id":0})))
-# srtm = pd.DataFrame(tarif_srtm.find({},{"_id":0}))
-# df = pd.concat([soretras,srtm],axis=0)
-# st.write(df)
-# tarif_srtm.delete_many({})
-# tarif_soretras.delete_many({})
+                        st.info("S'il ya une fausse donnée ou une donné monquante, veuillez les signaler\nou l'ajouter\nNous avons besoin de votre aide pour améliorer notre service\nMerci pour votre compréhension\nNous allons vérifier votre demande et vous répondre dans les plus brefs délais")
+                        form_holder = st.form("form")
+                        with form_holder:
+                            col_dep,col_dest = st.columns(2)
+                            col_dep.selectbox("Select Departure Station", data,key="depart_input")
+                            col_dest.selectbox("Select Destination", clean_dests,key="dest_input")
+                            coldep_time,colarr_time = st.columns(2)
+                            coldep_time.time_input("Departure Time",key="dep_time")
+                            colarr_time.time_input("Arrival Time",key="arr_time")
+                            colprice = st.columns(1)
+                            st.number_input("Price",key="price")
+                            colcompany = st.columns(1)
+                            st.selectbox("Select Company", selected_companies)
+                            submit = st.form_submit_button("Submit")
+                        if submit:
+                            st.write("Form submitted")
+   
 
     
-        
+    
+    
+    
+    
+    
+    
+    
+    
+    

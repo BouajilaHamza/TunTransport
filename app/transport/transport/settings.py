@@ -15,7 +15,7 @@ client = MongoClient('mongodb://localhost:27017/')
 BOT_NAME = "transport"
 SPIDER_MODULES = ["transport.spiders"]
 NEWSPIDER_MODULE = "transport.spiders"
-client['Transport']["Places"].drop()
+# client['Transport']["Places"].drop()
 # client.close()
 # logger.info("Collection Places dropped ...!!!")
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
