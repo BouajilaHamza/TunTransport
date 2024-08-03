@@ -37,6 +37,6 @@ def translate(text):
 
 # @st.cache_resource(show_spinner=False)
 def clean_filter(_collection,filter):
-    raw_data = list(_collection.find(filter))
+    raw_data = list(_collection.find(filter,{"_id":0}))
     clean_data = [i["Name"] for i in raw_data]
     return raw_data,clean_data

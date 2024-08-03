@@ -1,3 +1,4 @@
+import json
 import scrapy
 
 
@@ -8,17 +9,18 @@ class TarifsSpider(scrapy.Spider):
                        "soretras.com.tn",
                        "srtm.tn"]
     headers = {"Content-Type": "multipart/form-data"}
-
     
     def start_requests(self) :
-      if self.Company == "SRTG":
-          yield scrapy.Request(f"https://api.srtgouafel.com.tn/api/station_arr?arr={self.location_id}", headers=self.headers,callback=self.parse_srtg)
-      if self.Company == "SRTM":
-          yield scrapy.Request(self.location_id,callback=self.parse_srtm)
-          
-      if self.Company == "Soretras":
-          url = f"https://soretras.com.tn/pages/abonnementstarifreg2/{self.location_id}"
-          payload = f"get_option={self.location_id}"
+        self.depart = json.loads(self.depart)   
+        self.destination = json.loads(self.destination)
+        if self.Company == "SRTG":
+            yield scrapy.Request(f"https://api.srtgouafel.com.tn/api/station_arr?arr={self.destination['Id']}", headers=self.headers,callback=self.parse_srtg)
+        if self.Company == "SRTM":
+            yield scrapy.Request(self.destination['Id'],callback=self.parse_srtm)
+            
+        if self.Company == "Soretras":
+          url = f"https://soretras.com.tn/pages/abonnementstarifreg2/{self.destination['Id']}"
+          payload = f"get_option={self.destination['Id']}"
           headers = {
           'Accept': '*/*',
           'Accept-Language': 'en-GB,en;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6',
@@ -46,6 +48,8 @@ class TarifsSpider(scrapy.Spider):
                 "depart_time": tr.xpath(".//td[1]/text()").get(),
                 "arrive_time": tr.xpath(".//td[2]/text()").get(),
                 "price": tr.xpath(".//td[3]/text()").get(),
+                "depart": self.depart["Name"],
+                "destination": self.destination["Name"]
             }
 
     

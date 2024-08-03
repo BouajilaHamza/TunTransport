@@ -2,7 +2,7 @@ import json
 import requests
 import time
 import streamlit as st
-
+from typing import Annotated, List
 
 # @st.cache_resource(show_spinner=False)
 def get_departs():
@@ -35,15 +35,15 @@ def get_available_destinations(depart_name:str, depart_id:str, depart_company:st
 
 
 
-@st.cache_resource(show_spinner=False)
-def get_tarifs(location_name:str, location_id:str, company:str)-> json:
+# @st.cache_resource(show_spinner=False)
+def get_tarifs(_depart:dict, _destination:dict, company:Annotated[str,List[str]])-> json:
     
     url = "http://localhost:6800/schedule.json"
     payload = {
         'project': 'default',
         'spider': 'tarifs',
-        "depart":location_name,
-        "location_id":location_id,
+        "depart":json.dumps(_depart),
+        "destination":json.dumps(_destination),
         "Company":company
     }
     response = requests.post(url, data=payload)

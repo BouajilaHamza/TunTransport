@@ -3,12 +3,12 @@ from utils.database import init_mongo,get_dests_from_mongo
 from utils.scraping import get_departs,get_tarifs,wait_for_spider
 from utils.ETL import clean_filter
 import pandas as pd
-
+st.set_page_config(page_title="Transport Booking System", page_icon="🚗", layout="wide")
 
 
 collection , dests,tarif_collection = init_mongo()
 raw_data,data = clean_filter(collection,{})
-st.title("Transport Booking System")
+st.title("Transport Booking System 🚗")
 selected_companies = st.multiselect("Select Company", ["SRTM", "SRTG", "Soretras"])
 if selected_companies:
     filter = {"Company": {"$in": selected_companies}} if selected_companies else {}
@@ -38,8 +38,6 @@ if selected_companies:
                 selected_dict = selected_dict[0]
             raw_dests,clean_dests = get_dests_from_mongo(dests, selected_dict, selected_companies)
             selected_dest = st.selectbox("Select Destination", clean_dests)
-
-            # submit = st.button("Get Data")
             
             if selected_dest :
                 selected_dest_dicts = [i for i in raw_dests if i["Name"]==selected_dest]
@@ -48,11 +46,17 @@ if selected_companies:
                 else:
                     with st.spinner("Getting Tarification from the web ..."):
                         selected_dest_dict = selected_dest_dicts[0]
-                        response = get_tarifs(selected_dest_dict["Name"], selected_dest_dict["Id"], selected_dest_dict["Company"])
-                        wait_for_spider(response)
-                        _,_,tarif_collection=init_mongo()
-                        l=list(tarif_collection.find({},{"_id":0}))
-                        df = pd.DataFrame(l)
+                        available_tarifs = list(tarif_collection.find({"depart":selected_departure,"destination":selected_dest}, {"_id":0}))
+                        if len(available_tarifs) == 0:   
+                            response = get_tarifs(selected_dict, selected_dest_dict, selected_dest_dict["Company"])
+                            wait_for_spider(response)
+                            filter = {"depart":selected_departure,"destination":selected_dest}
+                            _,_,tarif_collection = init_mongo()
+                            l=list(tarif_collection.find(filter,{"_id":0}))
+                            df = pd.DataFrame(l)
+                        else:
+                            l=list(available_tarifs)
+                            df = pd.DataFrame(l)
                         with st.container():
                             st.dataframe(df,hide_index=True,use_container_width=True)
 
