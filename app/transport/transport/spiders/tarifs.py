@@ -14,7 +14,7 @@ class TarifsSpider(scrapy.Spider):
         self.depart = json.loads(self.depart)   
         self.destination = json.loads(self.destination)
         if self.Company == "SRTG":
-            yield scrapy.Request(f"https://api.srtgouafel.com.tn/api/station_arr?arr={self.destination['Id']}", headers=self.headers,callback=self.parse_srtg)
+            yield scrapy.Request(f"https://api.srtgouafel.com.tn/api/liste_by_station?st1={self.depart['Id']}&st2={self.destination['Id']}", headers=self.headers,callback=self.parse_srtg)
         if self.Company == "SRTM":
             yield scrapy.Request(self.destination['Id'],callback=self.parse_srtm)
             
@@ -53,8 +53,18 @@ class TarifsSpider(scrapy.Spider):
             }
 
     
-    def parse_srtg(self, response):
-      pass 
+    def parse_srtg(self, response): 
+        self.logger.info(response.json())       
+        if response.json()["status"]:
+            for voy in response.json()["horaires"]:
+                
+                yield {
+                    "company": "SRTG",
+                    "depart_time": voy["depart"],
+                    "arrive_time": voy["arr"],
+                    "depart": self.depart['Name'],
+                    "destination": self.destination['Name'], 
+                } 
     
     
     
