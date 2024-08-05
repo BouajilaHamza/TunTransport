@@ -4,13 +4,49 @@ from utils.database import init_mongo,get_dests_from_mongo
 from utils.scraping import get_departs,get_tarifs,wait_for_spider
 from utils.ETL import clean_filter
 import pandas as pd
-st.set_page_config(page_title="Transport Booking System", page_icon="🚗", layout="wide")
+st.set_page_config(page_title="TuGo", page_icon="🚗", layout="wide")
+# Custom HTML and CSS for the footer
+footer = """
+<style>
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+}
+.footer a {
+    text-decoration: none;
+    color: black;
+}
+.footer img {
+    width: 30px;  /* Adjust size as needed */
+    vertical-align: middle;
+}
+</style>
+<div class='footer'>
+    <p>We are welcoming your contribution to this project so everyone can move in tunisia in ease and confort</p>
+    <a href='https://github.com/BouajilaHamza/TUNTRANSPORT' target='_blank'>
+        <img src='https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg' alt='GitHub Logo' style='width:20px;height:20px;'>
+    </a>
+    <a href='https://www.linkedin.com/company/tunisiago/' target='_blank'>
+        <img src='https://upload.wikimedia.org/wikipedia/commons/e/e8/Linkedin-logo-blue-In-square-40px.png' alt='LinkedIn Logo' style='width:20px;height:20px;' >
+    </a>
+    <br>
+    <br>
+    <p style='font-size:10px;opacity:50%;'>All rights reserved 2024</p>
+</div>
+"""
+
+# Render the footer
+st.markdown(footer, unsafe_allow_html=True)
 
 
 collection , dests,tarif_collection = init_mongo()
 raw_data,data = clean_filter(collection,{})
-st.title("Transport Booking System 🚗")
-st.write("This is a simple web application that allows you to book your transport ticket online")
+st.title("TuGo - Move with ease and confort 🚗")
+st.write("This is a simple web application that facilitates your transportation in Tunisia")
 st.write("The data is fetshed directly from the companies **Official** websites")
 selected_companies = st.multiselect("Select Company", ["SRTM", "SRTG", "Soretras"])
 if selected_companies:
