@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   dashboard:
     build: 
@@ -5,12 +6,29 @@ services:
       dockerfile: Dockerfile
       args:
         MONGO_URI: ${MONGO_URI}
+        SCRAPING_URI: ${SCRAPING_URI}
     ports:
       - "8000:8501"
     environment:
       - MONGO_URI
+      - SCRAPING_URI
+      - REDIS_HOST=redis  # Add Redis host
+      - REDIS_PORT=6379    # Default Redis port
+
+
+
+
   data-ingestion:
-    build: Data-Ingestion/.
+    build: 
+      context: Data-Ingestion/.
+      dockerfile: Dockerfile
+      args:
+        MONGO_URI: ${MONGO_URI}
     ports:
       - "6800:6800"
-
+    environment:
+      - MONGO_URI
+  redis:  # Add Redis service
+    image: redis:latest
+    ports:
+      - "6379:6379"  # Expose Redis port

@@ -3,10 +3,11 @@ import requests
 import time
 import streamlit as st
 from typing import Annotated, List
-
+import os
+SCRAPING_URI = os.getenv('SCRAPING_URI')
 # @st.cache_resource(show_spinner=False)
 def get_departs():
-    url = "http://localhost:6800/schedule.json"
+    url = f"{SCRAPING_URI}/schedule.json"
     payload = {
         'project': 'default',
         'spider': 'dests',
@@ -21,7 +22,7 @@ def get_departs():
 @st.cache_resource(show_spinner=False)
 def get_available_destinations(depart_name:str, depart_id:str, depart_company:str):
     
-    url = "http://localhost:6800/schedule.json"
+    url = f"{SCRAPING_URI}/schedule.json"
     payload = {
         'project': 'default',
         'spider': 'deps',
@@ -38,7 +39,7 @@ def get_available_destinations(depart_name:str, depart_id:str, depart_company:st
 # @st.cache_resource(show_spinner=False)
 def get_tarifs(_depart:dict, _destination:dict, company:Annotated[str,List[str]])-> json:
     
-    url = "http://localhost:6800/schedule.json"
+    url = f"{SCRAPING_URI}/schedule.json"
     payload = {
         'project': 'default',
         'spider': 'tarifs',
@@ -56,7 +57,7 @@ def wait_for_spider(response:json):
     job_id = response["jobid"]
     while True:
         time.sleep(3)
-        url = f"http://localhost:6800/status.json?job={job_id}"
+        url = f"{SCRAPING_URI}/status.json?job={job_id}"
 
         payload = {
             "project": "default",

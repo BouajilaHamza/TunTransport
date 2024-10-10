@@ -8,9 +8,10 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import logging
 from pymongo import MongoClient
-
+import os
+MONGO_URI = os.getenv('MONGO_URI')
 # logger = logging.getLogger('scrapy')
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient(MONGO_URI)
 
 BOT_NAME = "transport"
 SPIDER_MODULES = ["transport.spiders"]
