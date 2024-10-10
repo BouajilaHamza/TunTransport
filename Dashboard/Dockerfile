@@ -1,8 +1,7 @@
-FROM python:3.11 
+FROM python:3.9
 
-COPY . /app
-WORKDIR /app
+COPY . .
+WORKDIR /.
 
 RUN pip install -r requirements.txt
-
-CMD ["python", "app.py"]
+CMD ["streamlit", "run", "main.py"]

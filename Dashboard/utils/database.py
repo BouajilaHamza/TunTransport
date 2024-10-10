@@ -2,11 +2,12 @@ from pymongo import MongoClient
 import streamlit as st
 from utils.ETL import clean_filter
 from utils.scraping import get_available_destinations
+import os 
 
-
+mongo_uri = os.getenv('MONGO_URI')
 # @st.cache_resource(show_spinner=False)
 def init_mongo():
-    client = MongoClient('mongodb://localhost:27017/')
+    client = MongoClient(mongo_uri)
     db = client['Transport']
     collection = db["Places"]
     dests = db["Destinations"]

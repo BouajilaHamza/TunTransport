@@ -1,7 +1,16 @@
 services:
-  web:
-    build: .
+  dashboard:
+    build: 
+      context: Dashboard/.
+      dockerfile: Dockerfile
+      args:
+        MONGO_URI: ${MONGO_URI}
     ports:
-      - "8000:5000"
-  redis:
-    image: "redis:alpine"
+      - "8000:8501"
+    environment:
+      - MONGO_URI
+  data-ingestion:
+    build: Data-Ingestion/.
+    ports:
+      - "6800:6800"
+
