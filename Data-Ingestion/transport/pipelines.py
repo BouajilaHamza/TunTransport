@@ -4,36 +4,43 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 
+import os
+import re
+
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
-import re
 from pymongo import MongoClient
+
+MONGO_URI = os.getenv("MONGO_URI")
+
 
 class SNTRItPipeline:
     def process_item(self, item, spider):
         item["Depart"] = item["Depart"].replace("%20", " ")
         item["Destination"] = item["Destination"].replace("%20", " ")
-        item['Price'] = re.sub(r'[^\d.]', '', item['Price'])
+        item["Price"] = re.sub(r"[^\d.]", "", item["Price"])
         return item
+
 
 class SoretrasPipeline:
     def process_item(self, item, spider):
-        item['Price'] = re.sub(r'[^\d.]', '', item['Price'])
+        item["Price"] = re.sub(r"[^\d.]", "", item["Price"])
         return item
+
 
 class SRTMPipeline:
     def process_item(self, item, spider):
-        item['Price'] = re.sub(r'[^\d.]', '', item['Price'])
+        item["Price"] = re.sub(r"[^\d.]", "", item["Price"])
         return item
-    
+
 
 class MongoDBPipeline:
     def open_spider(self, spider):
-        self.client = MongoClient('mongodb://localhost:27017/')
-        self.db = self.client['Transport']
+        self.client = MongoClient(MONGO_URI)
+        self.db = self.client["Transport"]
         self.collection = self.db["Places"]
-        self.tarif_collection = self.db['Tarif']
-        self.deps_collection = self.db['Destinations']
+        self.tarif_collection = self.db["Tarif"]
+        self.deps_collection = self.db["Destinations"]
 
     def close_spider(self, spider):
         self.client.close()

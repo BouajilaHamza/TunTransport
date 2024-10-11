@@ -1,14 +1,10 @@
-from typing import Iterable
 import scrapy
-from transport.items import SntriItem
-import scrapy_splash
 from selenium.webdriver import Edge
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.edge.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from transport.items import SntriItem
 
 
 class SntriSpider(scrapy.Spider):
@@ -16,26 +12,28 @@ class SntriSpider(scrapy.Spider):
     allowed_domains = ["sntri.com.tn"]
     start_urls = ["https://sntri.com.tn"]
     options = Options()
-    options.add_argument('start-maximized')
-    options.add_argument('disable-infobars')
-    options.add_argument('--disable-extensions')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--no-sandbox')
-    options.add_argument('--ignore-certificate-errors')
+    options.add_argument("start-maximized")
+    options.add_argument("disable-infobars")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--ignore-certificate-errors")
     # options.add_argument('--headless')
-    
 
-    
     def parse(self, response):
         item = SntriItem()
         driver = Edge(options=self.options)
-        driver.get(f'https://sntri.com.tn/search?from={self.depart}&to={self.destination}')
+        driver.get(
+            f"https://sntri.com.tn/search?from={self.depart}&to={self.destination}"
+        )
         if "tftable" in driver.page_source:
-            table = WebDriverWait(driver,30).until(EC.presence_of_element_located((By.CLASS_NAME,'tftable')))
-            rows = table.find_elements(By.TAG_NAME,'tr')
+            table = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "tftable"))
+            )
+            rows = table.find_elements(By.TAG_NAME, "tr")
             for row in rows:
-                tds = row.find_elements(By.TAG_NAME,'td')
+                tds = row.find_elements(By.TAG_NAME, "td")
                 if len(tds) != 0:
                     tds = [td.text for td in tds]
                     self.logger.info(tds)
@@ -47,9 +45,6 @@ class SntriSpider(scrapy.Spider):
                     item["Distance"] = tds[-2]
                     item["Price"] = tds[-1]
                     yield item
-
-
-
 
     # def get_schedules(self, response):
     #     self.logger.info(response)
