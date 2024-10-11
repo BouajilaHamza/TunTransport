@@ -15,7 +15,6 @@ logger = logging.getLogger("scrapy")
 
 
 MONGO_URI = os.getenv("MONGO_URI")
-logger.info(MONGO_URI)
 
 # logger = logging.getLogger('scrapy')
 client = MongoClient(MONGO_URI)
