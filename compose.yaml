@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   dashboard:
-    build: 
+    build:
       context: Dashboard/.
       dockerfile: Dockerfile
       args:
@@ -19,7 +19,7 @@ services:
 
 
   data-ingestion:
-    build: 
+    build:
       context: Data-Ingestion/.
       dockerfile: Dockerfile
       args:
@@ -28,7 +28,10 @@ services:
       - "6800:6800"
     environment:
       - MONGO_URI
+
+
+
   redis:  # Add Redis service
-    image: redis:latest
+    image: redis/redis-stack:latest
     ports:
-      - "6379:6379"  # Expose Redis port
+      - "6379:6379"
