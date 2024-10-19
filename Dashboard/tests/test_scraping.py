@@ -2,7 +2,7 @@ import json
 import os
 from unittest.mock import patch
 
-from utils.scraping import (
+from Dashboard.utils.scraping import (
     get_available_destinations,
     get_departs,
     get_tarifs,
@@ -12,7 +12,7 @@ from utils.scraping import (
 SCRAPING_URI = os.getenv("SCRAPING_URI")
 
 
-@patch("scraping.requests.post")
+@patch("Dashboard.utils.scraping.requests.post")
 def test_get_departs(mock_post):
     # Arrange
     mock_post.return_value.status_code = 200  # Mocking successful response
@@ -26,7 +26,7 @@ def test_get_departs(mock_post):
     )
 
 
-@patch("your_module.requests.post")
+@patch("Dashboard.utils.scraping.requests.post")
 def test_get_available_destinations(mock_post):
     # Arrange
     depart_name = "Sample Depart"
@@ -50,7 +50,7 @@ def test_get_available_destinations(mock_post):
     )
 
 
-@patch("your_module.requests.post")
+@patch("Dashboard.utils.scraping.requests.post")
 def test_get_tarifs(mock_post):
     # Arrange
     _depart = {"key": "value"}
@@ -76,7 +76,7 @@ def test_get_tarifs(mock_post):
     )
 
 
-@patch("your_module.requests.get")
+@patch("Dashboard.utils.scraping.requests.get")
 def test_wait_for_spider(mock_get):
     # Arrange
     response = {"jobid": "12345"}
