@@ -4,8 +4,9 @@ ARG MONGO_URI
 
 ENV SCRAPING_URL=${SCRAPING_URL}
 ENV MONGO_URI=${MONGO_URI}
+WORKDIR /dashboard
 COPY . .
-WORKDIR /.
+
 
 RUN pip install -r requirements.txt
 CMD ["streamlit", "run", "main.py"]

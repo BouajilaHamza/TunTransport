@@ -4,7 +4,6 @@ import os
 import redis
 import streamlit as st
 from pymongo import MongoClient
-from redis.commands.json.path import Path
 from redis.commands.search.field import NumericField, TextField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from utils.ETL import clean_filter
@@ -53,21 +52,23 @@ def get_dests_from_mongo(collection, selected_departure: str, filter: dict):
 
 
 # Example function to get data with caching logic
-def get_data(query, collection, selected_departure, filter):
+def get_data(query: str, collection, selected_departure: str, filter: dict):
     # Check if data is cached in Redis
-    cached_data = r.get(query)
-    if cached_data:
-        return json.loads(cached_data)  # Return cached data
+    value_type = r.type(query)
+    # print(f"Value type for query '{query}': {value_type.decode('utf-8')}")
+
+    # Check if the key exists before trying to get it
+    if value_type == b"string":  # Ensure it's a string type
+        cached_data = r.get(query)
+        if cached_data:
+            # print(f"Returning cached data for query '{query}'")
+            return json.loads(cached_data)  # Return cached data
+
     # If not cached, fetch from MongoDB (implement this function)
+    st.write(f"Fetching data from MongoDB for query '{query}'")
     data = get_dests_from_mongo(collection, selected_departure, filter)
 
     # Cache the result in Redis for future requests (set expiration time if needed)
-    r.json().set("destination:1", Path.root_path(), data)  # Cache for 1 hour
-    cursor = 0
-    while True:
-        cursor, keys = r.scan(cursor)
-        for key in keys:
-            st.write(key)
-        if cursor == 0:
-            break
+    r.set(query, json.dumps(data), ex=3600)  # Cache for 1 hour (3600 seconds)
+
     return data
