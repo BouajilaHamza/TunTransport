@@ -1,0 +1,32 @@
+name: Codecov
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  codecov:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
+
+    - name: Install dependencies
+      run: |
+        pip install pre-commit
+        pre-commit install
+
+    - name: Run tests and upload coverage
+      run: |
+        pytest --cov=your_package --cov-report xml:coverage.xml
+        bash <(curl -s https://codecov.io/bash)

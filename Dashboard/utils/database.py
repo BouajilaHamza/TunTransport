@@ -39,7 +39,7 @@ def init_mongo():
     return collection, dests, tarif_collecion
 
 
-def get_dests_from_mongo(collection, selected_departure: str, filter):
+def get_dests_from_mongo(collection, selected_departure: str, filter: dict):
     raw_dests, clean_dests = clean_filter(collection, filter)
     if len(clean_dests) == 0:
         with st.spinner("Getting data from the web ..."):
@@ -58,7 +58,6 @@ def get_data(query, collection, selected_departure, filter):
     cached_data = r.get(query)
     if cached_data:
         return json.loads(cached_data)  # Return cached data
-
     # If not cached, fetch from MongoDB (implement this function)
     data = get_dests_from_mongo(collection, selected_departure, filter)
 

@@ -15,14 +15,19 @@ footer = """
     width: 100%;
     text-align: center;
     padding: 10px;
+    background-color: black;
+    opacity:100%;
+    z-index: 1000;
 }
 .footer a {
     text-decoration: none;
     color: black;
+    z-index: 1002;
 }
 .footer img {
     width: 30px;  /* Adjust size as needed */
     vertical-align: middle;
+    z-index: 1001;
 }
 </style>
 <div class='footer'>
@@ -81,6 +86,7 @@ if selected_companies:
                         if selected_companies
                         else {"Depart": selected_departure}
                     )
+
                 raw_dests, clean_dests = get_data(
                     "destination:1", dests, selected_dict, filter
                 )
@@ -95,8 +101,17 @@ if selected_companies:
                 st.info(selected_dict)
             else:
                 selected_dict = selected_dict[0]
+
+            filter = (
+                {
+                    "Depart": selected_dict["Name"],
+                    "Company": {"$in": selected_companies},
+                }
+                if selected_companies
+                else {"Depart": selected_departure}
+            )
             raw_dests, clean_dests = get_data(
-                "destination:1", dests, selected_dict, selected_companies
+                "destination:1", dests, selected_dict, filter
             )
             selected_dest = st.selectbox("Select Destination", clean_dests)
 
