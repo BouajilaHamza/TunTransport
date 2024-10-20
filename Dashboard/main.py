@@ -167,7 +167,7 @@ if selected_companies:
                             depart_time = coldep_time.time_input(
                                 "Departure Time", key="dep_time"
                             )
-                            st.write(depart_time)
+
                             arrive_time = colarr_time.time_input(
                                 "Arrival Time", key="arr_time"
                             )
@@ -181,8 +181,8 @@ if selected_companies:
                             tarif_collection.insert_one(
                                 {
                                     "company": company,
-                                    "depart_time": depart_time,
-                                    "arrive_time": arrive_time,
+                                    "depart_time": str(depart_time),
+                                    "arrive_time": str(arrive_time),
                                     "price": price,
                                     "depart": depart,
                                     "destination": destination,
