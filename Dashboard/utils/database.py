@@ -4,8 +4,10 @@ import os
 import redis
 import streamlit as st
 from pymongo import MongoClient
+from redis.commands.json.path import Path
 from redis.commands.search.field import NumericField, TextField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
+from redis.commands.search.query import Query
 from utils.ETL import clean_filter
 from utils.scraping import get_available_destinations
 
@@ -16,19 +18,21 @@ mongo_uri = os.getenv("MONGO_URI")
 
 r = redis.Redis(host=redis_host, port=redis_port, db=0)
 schema = (
-    TextField("$.Depart", as_name="depart"),
-    NumericField("$.Id", as_name="id"),
     TextField("$.Name", as_name="name"),
+    NumericField("$.Id", as_name="id"),
     TextField("$.Company", as_name="company"),
-)
-r.ft().dropindex()
-r.ft().create_index(
-    schema,
-    definition=IndexDefinition(prefix=["destination:"], index_type=IndexType.JSON),
+    TextField("$.Depart", as_name="depart"),
 )
 
+try:
+    r.ft("destinations_index").create_index(
+        schema,
+        definition=IndexDefinition(prefix=["destination:"], index_type=IndexType.JSON),
+    )
+except Exception as e:
+    print(f"Index creation error: {e}")
 
-# @st.cache_resource(show_spinner=False)
+
 def init_mongo():
     client = MongoClient(mongo_uri)
     db = client["Transport"]
@@ -38,7 +42,7 @@ def init_mongo():
     return collection, dests, tarif_collecion
 
 
-def get_dests_from_mongo(collection, selected_departure: str, filter: dict):
+def get_dests_from_mongo(collection, selected_departure: dict, filter: dict):
     raw_dests, clean_dests = clean_filter(collection, filter)
     if len(clean_dests) == 0:
         with st.spinner("Getting data from the web ..."):
@@ -51,24 +55,60 @@ def get_dests_from_mongo(collection, selected_departure: str, filter: dict):
     return raw_dests, clean_dests
 
 
-# Example function to get data with caching logic
-def get_data(query: str, collection, selected_departure: str, filter: dict):
-    # Check if data is cached in Redis
-    value_type = r.type(query)
-    # print(f"Value type for query '{query}': {value_type.decode('utf-8')}")
+def get_dests_from_redis(company=None, name=None, id=None, depart=None):
+    # Start building the query
+    filters = []
 
-    # Check if the key exists before trying to get it
-    if value_type == b"string":  # Ensure it's a string type
-        cached_data = r.get(query)
-        if cached_data:
-            # print(f"Returning cached data for query '{query}'")
-            return json.loads(cached_data)  # Return cached data
+    # Add filters based on provided parameters
+    if company:
+        # If multiple companies are provided, split them and join with '|'
+        if isinstance(company, list):
+            company_filter = "|".join([f"@company:{c}" for c in company])
+            filters.append(f"({company_filter})")
+        else:
+            filters.append(f"@company:{company}")
 
+    if depart:
+        filters.append(f"@depart:{depart}")
+
+    if name:
+        filters.append(f"@name:{name}")
+
+    if id:
+        filters.append(f"@id:{id}")
+
+    # Combine filters with AND logic
+    if filters:
+        query_string = " AND ".join(filters)
+    else:
+        query_string = "*"  # No filters, match everything
+    query = Query(query_string).paging(0, 5)
+    result = r.ft("destinations_index").search(query)
+
+    return result.docs  # ,result.total
+
+
+def get_data(collection, selected_departure: dict, filter: dict):
+    company = filter["Company"]["$in"]
+    depart = filter["Depart"]
+    raw_dests = get_dests_from_redis(company=company, depart=depart)
+    if raw_dests:
+        clean_dests = [json.loads(doc["json"])["Name"] for doc in raw_dests]
+        raw_dests = [json.loads(doc["json"]) for doc in raw_dests]
+        return raw_dests, clean_dests
     # If not cached, fetch from MongoDB (implement this function)
-    st.write(f"Fetching data from MongoDB for query '{query}'")
-    data = get_dests_from_mongo(collection, selected_departure, filter)
+    # print(f"Fetching data from MongoDB for query '{query}'")
+    raw_dests, clean_dests = get_dests_from_mongo(
+        collection, selected_departure, filter
+    )
 
     # Cache the result in Redis for future requests (set expiration time if needed)
-    r.set(query, json.dumps(data), ex=3600)  # Cache for 1 hour (3600 seconds)
-
-    return data
+    for dest in raw_dests:
+        document_id = f"destination:{str(dest['_id'])}"
+        dest.pop("_id")
+        try:
+            dest["Id"] = int(dest["Id"])
+        except TypeError:
+            pass
+        r.json().set(document_id, Path.root_path(), dest)
+    return raw_dests, clean_dests

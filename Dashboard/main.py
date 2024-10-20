@@ -87,10 +87,8 @@ if selected_companies:
                         else {"Depart": selected_departure}
                     )
 
-                raw_dests, clean_dests = get_data(
-                    "destination:1", dests, selected_dict, filter
-                )
-                selected_dests = st.selectbox("Select Destination", clean_dests)
+                    raw_dests, clean_dests = get_data(dests, selected_dict, filter)
+                    selected_dests = st.selectbox("Select Destination", clean_dests)
     else:
         selected_departure = st.selectbox(
             "Select Departure Station", data, key="depart"
@@ -110,9 +108,7 @@ if selected_companies:
                 if selected_companies
                 else {"Depart": selected_departure}
             )
-            raw_dests, clean_dests = get_data(
-                "destination:1", dests, selected_dict, filter
-            )
+            raw_dests, clean_dests = get_data(dests, selected_dict, filter)
             selected_dest = st.selectbox("Select Destination", clean_dests)
 
             if selected_dest:
@@ -156,24 +152,40 @@ if selected_companies:
                             st.dataframe(df, hide_index=True, use_container_width=True)
 
                         st.info(
-                            "S'il ya une fausse donnée ou une donné monquante, veuillez les signaler\nou l'ajouter\nNous avons besoin de votre aide pour améliorer notre service\nMerci pour votre compréhension\nNous allons vérifier votre demande et vous répondre dans les plus brefs délais"
+                            "If there is incorrect data or missing data, please report it or add it. We need your help to improve our service. Thank you for your understanding. We will check your request and respond to you as soon as possible."
                         )
                         form_holder = st.form("form")
                         with form_holder:
                             col_dep, col_dest = st.columns(2)
-                            col_dep.selectbox(
+                            depart = col_dep.selectbox(
                                 "Select Departure Station", data, key="depart_input"
                             )
-                            col_dest.selectbox(
+                            destination = col_dest.selectbox(
                                 "Select Destination", clean_dests, key="dest_input"
                             )
                             coldep_time, colarr_time = st.columns(2)
-                            coldep_time.time_input("Departure Time", key="dep_time")
-                            colarr_time.time_input("Arrival Time", key="arr_time")
+                            depart_time = coldep_time.time_input(
+                                "Departure Time", key="dep_time"
+                            )
+                            st.write(depart_time)
+                            arrive_time = colarr_time.time_input(
+                                "Arrival Time", key="arr_time"
+                            )
                             colprice = st.columns(1)
-                            st.number_input("Price", key="price")
+                            price = st.number_input("Price", key="price")
+
                             colcompany = st.columns(1)
-                            st.selectbox("Select Company", selected_companies)
+                            company = st.selectbox("Select Company", selected_companies)
                             submit = st.form_submit_button("Submit")
                         if submit:
+                            tarif_collection.insert_one(
+                                {
+                                    "company": company,
+                                    "depart_time": depart_time,
+                                    "arrive_time": arrive_time,
+                                    "price": price,
+                                    "depart": depart,
+                                    "destination": destination,
+                                }
+                            )
                             st.write("Form submitted")
