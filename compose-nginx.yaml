@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  dashboard:
+    build:
+      context: Dashboard/.
+      dockerfile: Dockerfile
+      args:
+        MONGO_URI: ${MONGO_URI}
+        SCRAPING_URI: ${SCRAPING_URI}
+    environment:
+      - MONGO_URI
+      - SCRAPING_URI
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    expose:
+      - "8501"  # Use expose instead of ports for internal communication
+
+  data-ingestion:
+    build:
+      context: Data-Ingestion/.
+      dockerfile: Dockerfile
+      args:
+        MONGO_URI: ${MONGO_URI}
+    expose:
+      - "6800"  # Use expose for internal communication only
+
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"   # Map port 80 on the host to port 80 in the container
+      - "443:443" # Map port 443 for HTTPS
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf # Mount your Nginx config file
+    depends_on:
+      - dashboard
+      - data-ingestion

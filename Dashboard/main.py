@@ -55,6 +55,8 @@ st.write(
     "This is a simple web application that facilitates your transportation in Tunisia"
 )
 st.write("The data is fetshed directly from the companies **Official** websites")
+
+
 selected_companies = st.multiselect("Select Company", ["SRTM", "SRTG", "Soretras"])
 if selected_companies:
     filter = {"Company": {"$in": selected_companies}} if selected_companies else {}
@@ -188,4 +190,4 @@ if selected_companies:
                                     "destination": destination,
                                 }
                             )
-                            st.write("Form submitted")
+                            st.success("Form submitted Successfuly")

@@ -36,10 +36,10 @@ except Exception as e:
 def init_mongo():
     client = MongoClient(mongo_uri)
     db = client["Transport"]
-    collection = db["Places"]
-    dests = db["Destinations"]
+    departs_collection = db["Departs"]
+    destination_collection = db["Destinations"]
     tarif_collecion = db["Tarif"]
-    return collection, dests, tarif_collecion
+    return departs_collection, destination_collection, tarif_collecion
 
 
 def get_dests_from_mongo(collection, selected_departure: dict, filter: dict):
@@ -93,15 +93,17 @@ def get_data(collection, selected_departure: dict, filter: dict):
     depart = filter["Depart"]
     raw_dests = get_dests_from_redis(company=company, depart=depart)
     if raw_dests:
+        st.write(f"fetching data from redis : {filter}")
         clean_dests = [json.loads(doc["json"])["Name"] for doc in raw_dests]
         raw_dests = [json.loads(doc["json"]) for doc in raw_dests]
+        st.write(clean_dests)
         return raw_dests, clean_dests
     # If not cached, fetch from MongoDB (implement this function)
-    # print(f"Fetching data from MongoDB for query '{query}'")
+    st.write(f"Fetching data from MongoDB for query '{filter}'")
     raw_dests, clean_dests = get_dests_from_mongo(
         collection, selected_departure, filter
     )
-
+    st.write(clean_dests)
     # Cache the result in Redis for future requests (set expiration time if needed)
     for dest in raw_dests:
         document_id = f"destination:{str(dest['_id'])}"
