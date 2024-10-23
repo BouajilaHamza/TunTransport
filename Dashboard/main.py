@@ -134,6 +134,8 @@ if selected_companies:
                             )
                         )
                         if len(available_tarifs) == 0:
+                            if "_id" in selected_dict:
+                                selected_dict.pop("_id")
                             response = get_tarifs(
                                 selected_dict,
                                 selected_dest_dict,

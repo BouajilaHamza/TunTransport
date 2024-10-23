@@ -93,7 +93,7 @@ def get_data(collection, selected_departure: dict, filter: dict):
     depart = filter["Depart"]
     raw_dests = get_dests_from_redis(company=company, depart=depart)
     if raw_dests:
-        st.write(f"fetching data from redis : {filter}")
+        # st.write(f"fetching data from redis : {filter}")
         clean_dests = [json.loads(doc["json"])["Name"] for doc in raw_dests]
         raw_dests = [json.loads(doc["json"]) for doc in raw_dests]
 

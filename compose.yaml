@@ -1,4 +1,14 @@
 version: '3.8'
+
+networks:
+  my_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/24  # Define the subnet for the network
+
+
+
 services:
   dashboard:
     build:
@@ -14,6 +24,10 @@ services:
       - REDIS_PORT=6379
     expose:
       - "8501"  # Use expose instead of ports for internal communication
+    networks:
+      my_network:
+        ipv4_address: 10.5.0.2  # Static IP for the dashboard service
+
 
   data-ingestion:
     build:
@@ -23,11 +37,21 @@ services:
         MONGO_URI: ${MONGO_URI}
     expose:
       - "6800"  # Use expose for internal communication only
+    networks:
+      my_network:
+        ipv4_address: 10.5.0.3  # Static IP for the data ingestion service
+
+
 
   redis:
     image: redis/redis-stack:latest
     ports:
       - "6379:6379"
+    networks:
+      my_network:
+
+
+
 
   nginx:
     image: nginx:latest
@@ -39,3 +63,5 @@ services:
     depends_on:
       - dashboard
       - data-ingestion
+    networks:
+      my_network:
