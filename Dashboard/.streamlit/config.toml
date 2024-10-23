@@ -1,6 +1,13 @@
 [server]
 headless = true
-
-
 port = 8501
 enableCORS = false
+baseUrlPath = "/dashboard"
+
+
+
+
+
+[browser] # This ip and port will show in command prompt
+serverAddress = "dashboard" # Put your Local IP or Domain Name
+serverPort = 8501

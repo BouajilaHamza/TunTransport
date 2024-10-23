@@ -5,6 +5,8 @@ from utils.ETL import clean_filter
 from utils.scraping import get_departs, get_tarifs, wait_for_spider
 
 st.set_page_config(page_title="TuGo", page_icon="🚗", layout="wide")
+
+
 # Custom HTML and CSS for the footer
 footer = """
 <style>

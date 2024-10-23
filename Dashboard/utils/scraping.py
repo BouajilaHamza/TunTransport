@@ -24,6 +24,7 @@ def get_departs():
 @st.cache_resource(show_spinner=False)
 def get_available_destinations(depart_name: str, depart_id: str, depart_company: str):
     url = f"{SCRAPING_URI}/schedule.json"
+
     payload = {
         "project": "default",
         "spider": "dests",
@@ -40,6 +41,7 @@ def get_tarifs(
     _depart: dict, _destination: dict, company: Annotated[str, List[str]]
 ) -> json:
     url = f"{SCRAPING_URI}/schedule.json"
+
     payload = {
         "project": "default",
         "spider": "tarifs",
