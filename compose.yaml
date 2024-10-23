@@ -35,6 +35,8 @@ services:
       dockerfile: Dockerfile
       args:
         MONGO_URI: ${MONGO_URI}
+    environment:
+      - MONGO_URI
     expose:
       - "6800"  # Use expose for internal communication only
     networks:

@@ -99,7 +99,7 @@ def get_data(collection, selected_departure: dict, filter: dict):
 
         return raw_dests, clean_dests
     # If not cached, fetch from MongoDB (implement this function)
-    st.write(f"Fetching data from MongoDB for query '{filter}'")
+    # st.write(f"Fetching data from MongoDB for query '{filter}'")
     raw_dests, clean_dests = get_dests_from_mongo(
         collection, selected_departure, filter
     )
