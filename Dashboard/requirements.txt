@@ -4,4 +4,3 @@ redis
 pre-commit
 pytest
 pytest-mock
-redis-py
