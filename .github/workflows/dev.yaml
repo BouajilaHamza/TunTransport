@@ -56,7 +56,11 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
           sudo chmod 600 ~/.ssh/private.key
 
-      - name: Copy Docker Compose file and run
+      - name: Copy Docker Compose file to server
         run: |
-          scp -i ~/.ssh/private.key -P 22 docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
+          sudo chmod 600 compose.yaml
+          scp -i ~/.ssh/private.key -P 22 compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
+
+      - name: Run Docker Compose
+        run: |
           ssh -i ~/.ssh/private.key -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /. && docker compose up -d"
