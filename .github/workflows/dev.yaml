@@ -59,6 +59,14 @@ jobs:
         run: |
           ls
           pwd
+
+
+      - name: Find compose.yaml file
+        run: |
+          find $GITHUB_WORKSPACE -name compose.yaml
+
+
+
       - name: Copy Docker Compose file to server
         run: |
           sudo chmod 600 $GITHUB_WORKSPACE/compose.yaml
