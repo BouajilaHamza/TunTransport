@@ -62,8 +62,8 @@ jobs:
 
       - name: Add SSH key to known hosts
         run: |
-          touch ~/.ssh/known_hosts
-
+          chmod 600 ~/.ssh/private.key
+          ssh-keyscan -H your_host >> ~/.ssh/known_hosts || echo "Failed to add host key"
 
 
 
