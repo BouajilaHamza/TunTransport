@@ -58,6 +58,7 @@ jobs:
 
       - name: Copy Docker Compose file to server
         run: |
+          ls
           sudo chmod 600 compose.yaml
           scp -i ~/.ssh/private.key -P 22 compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
 
