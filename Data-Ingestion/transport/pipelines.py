@@ -38,9 +38,9 @@ class MongoDBPipeline:
     def open_spider(self, spider):
         self.client = MongoClient(MONGO_URI)
         self.db = self.client["Transport"]
-        self.collection = self.db["Places"]
+        self.departs_collection = self.db["Departs"]
         self.tarif_collection = self.db["Tarif"]
-        self.deps_collection = self.db["Destinations"]
+        self.destinations_collection = self.db["Destinations"]
 
     def close_spider(self, spider):
         self.client.close()
@@ -52,9 +52,9 @@ class MongoDBPipeline:
         #     self.tarif_srtm.insert_one(ItemAdapter(item).asdict())
         # elif spider.name == "srtg":
         if spider.name == "dests":
-            self.collection.insert_one(ItemAdapter(item).asdict())
+            self.destinations_collection.insert_one(ItemAdapter(item).asdict())
         elif spider.name == "deps":
-            self.deps_collection.insert_one(ItemAdapter(item).asdict())
+            self.departs_collection.insert_one(ItemAdapter(item).asdict())
         else:
             self.tarif_collection.insert_one(ItemAdapter(item).asdict())
         # self.collection.insert_one(ItemAdapter(item).asdict())

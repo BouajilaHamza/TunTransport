@@ -2,3 +2,5 @@ pymongo==4.5.0
 streamlit==1.39
 redis
 pre-commit
+pytest
+pytest-mock
