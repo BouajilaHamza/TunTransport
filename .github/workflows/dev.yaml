@@ -58,10 +58,11 @@ jobs:
       - name: check directory
         run: |
           ls
+          pwd
       - name: Copy Docker Compose file to server
         run: |
-          sudo chmod 600 compose.yaml
-          scp -i ~/.ssh/private.key -P 22 compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
+          sudo chmod 600 $GITHUB_WORKSPACE/compose.yaml
+          scp -i ~/.ssh/private.key -P 22 $GITHUB_WORKSPACE/compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
 
       - name: Run Docker Compose
         run: |
