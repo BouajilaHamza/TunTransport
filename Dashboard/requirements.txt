@@ -4,3 +4,4 @@ redis
 pre-commit
 pytest
 pytest-mock
+pytest-cov
