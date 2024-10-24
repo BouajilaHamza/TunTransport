@@ -50,27 +50,26 @@ jobs:
     runs-on: ubuntu-latest
     # needs: build-and-push-docker-image
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+
       - name: Create SSH key
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
           sudo chmod 600 ~/.ssh/private.key
-      - name: check directory
+
+
+      - name: Download compose file
         run: |
-          ls
-          pwd
-
-
-      - name: Find compose.yaml file
-        run: |
-          find $GITHUB_WORKSPACE -name compose.yaml
-
+          mkdir -p ./compose
+          cp ./compose.yaml ./compose/
 
 
       - name: Copy Docker Compose file to server
         run: |
-          sudo chmod 600 $GITHUB_WORKSPACE/compose.yaml
-          scp -i ~/.ssh/private.key -P 22 $GITHUB_WORKSPACE/compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
+          scp -i ~/.ssh/private.key -P 22 ./compose/compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
 
       - name: Run Docker Compose
         run: |
