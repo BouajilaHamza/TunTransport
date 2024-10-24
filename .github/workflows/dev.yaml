@@ -88,5 +88,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            scp -r ./compose.yaml ubuntu@${{ secrets.SERVER_IP }}:/path/to/destination
-            ssh ubuntu@${{ secrets.SERVER_IP }} "docker-compose -f /path/to/destination/compose.yaml up -d"
+            scp -r ./compose.yaml ${{ secrets.SERVER_USER}}@${{ secrets.SERVER_IP }}:/path/to/destination
+            ssh ${{ secrets.SERVER_USER}}@${{ secrets.SERVER_IP }} "docker-compose -f /path/to/destination/compose.yaml up -d"
