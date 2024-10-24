@@ -35,11 +35,11 @@ jobs:
           docker build \
           --build-arg MONGO_URI="${{ secrets.MONGO_URI }}" \
           --build-arg SCRAPING_URI="${{ secrets.SCRAPING_URI }}" \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-dashboard:latest
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-dashboard:latest Dashboard/.
 
           docker build \
           --build-arg MONGO_URI="${{ secrets.MONGO_URI }}" \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-data-ingestion:latest \
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-data-ingestion:latest Data-Ingestion/.
 
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-dashboard:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-data-ingestion:latest
