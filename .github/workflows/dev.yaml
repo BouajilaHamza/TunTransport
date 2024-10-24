@@ -58,8 +58,9 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
+          ssh-keygen -y -f ~/.ssh/private.key > ~/.ssh/public.key
           sudo chmod 600 ~/.ssh/private.key
-          ssh-keyscan -t rsa "${{ secrets.SERVER_IP }}" >> ~/.ssh/known_hosts
+          sudo chmod 600 ~/.ssh/public.key
 
 
       - name: Download compose file
