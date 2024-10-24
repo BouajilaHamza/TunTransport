@@ -58,9 +58,8 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
-          ssh-keygen -y -f ~/.ssh/private.key > ~/.ssh/public.key
-          sudo chmod 600 ~/.ssh/public.key
-
+          sudo chmod 600 ~/.ssh/private.key
+          ssh-keyscan -t rsa "${{ secrets.SERVER_IP }}" >> ~/.ssh/known_hosts
 
       - name: Download compose file
         run: |
@@ -70,8 +69,6 @@ jobs:
 
       - name: Copy Docker Compose file to server
         run: |
-          ssh-copy-id ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}
-          cat ./compose/compose.yaml
           scp -i ~/.ssh/private.key -P 22 ./compose/compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
 
       - name: Run Docker Compose
