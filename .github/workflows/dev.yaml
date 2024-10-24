@@ -69,6 +69,7 @@ jobs:
 
       - name: Copy Docker Compose file to server
         run: |
+          cat ./compose/compose.yaml
           scp -i ~/.ssh/private.key -P 22 ./compose/compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
 
       - name: Run Docker Compose
