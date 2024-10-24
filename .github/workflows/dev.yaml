@@ -59,4 +59,4 @@ jobs:
       - name: Copy Docker Compose file and run
         run: |
           scp -i ~/.ssh/private.key -P 22 docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
-          ssh -i ~/.ssh/private.key -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /. && docker-compose up -d"
+          ssh -i ~/.ssh/private.key -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /. && docker compose up -d"
