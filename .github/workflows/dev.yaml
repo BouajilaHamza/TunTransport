@@ -33,12 +33,12 @@ jobs:
       - name: Build and push Docker images
         run: |
           docker build \
-          --build-arg MONGO_URI=${{ secrets.MONGO_URI }} \
-          --build-arg SCRAPING_URI=${{ secrets.SCRAPING_URI }}\
+          --build-arg MONGO_URI="${{ secrets.MONGO_URI }}" \
+          --build-arg SCRAPING_URI="${{ secrets.SCRAPING_URI }}" \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-dashboard:latest
 
           docker build \
-          --build-arg MONGO_URI=${{ secrets.MONGO_URI }}\
+          --build-arg MONGO_URI="${{ secrets.MONGO_URI }}" \
           -t ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-data-ingestion:latest \
 
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/tuntransport-dashboard:latest
