@@ -62,7 +62,7 @@ jobs:
 
       - name: Add SSH key to known hosts
         run: |
-          ssh-keyscan -t rsa -p 22 -l ${{ secrets.SERVER_USER }} ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa -p 22 ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
 
 
