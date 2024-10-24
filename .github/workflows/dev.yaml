@@ -74,11 +74,11 @@ jobs:
           cp ./compose.yaml ./compose/
 
 
-      - name: Copy file to Ubuntu Server
-        uses: actions/upload-artifact@v2
-        with:
-          name: compose.yaml
-          path: ./compose/compose.yaml
+      # - name: Copy file to Ubuntu Server
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: compose.yaml
+      #     path: ./compose/compose.yaml
 
       - name: SSH to Ubuntu Server
         uses: appleboy/ssh-action@v1
@@ -88,5 +88,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            scp -r ./compose.yaml ${{ secrets.SERVER_USER}}@${{ secrets.SERVER_IP }}:/path/to/destination
+            scp -r ./compose/compose.yaml ${{ secrets.SERVER_USER}}@${{ secrets.SERVER_IP }}:/path/to/destination
             ssh ${{ secrets.SERVER_USER}}@${{ secrets.SERVER_IP }} "docker-compose -f /path/to/destination/compose.yaml up -d"
