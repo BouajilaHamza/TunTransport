@@ -3,3 +3,4 @@ streamlit==1.39
 redis
 pre-commit
 pytest
+pytest-mock

@@ -15,7 +15,7 @@ def mock_mongo(mocker):
     # Mock MongoDB client and collection
     mock_client = mocker.patch("pymongo.MongoClient")
     mock_collection = MagicMock()
-    mock_client.return_value["Transport"]["Places"] = mock_collection
+    mock_client.return_value["Transport"]["Destinations"] = mock_collection
     return mock_collection
 
 
@@ -34,9 +34,8 @@ def test_get_dests_from_mongo(mock_mongo):
     mongo_filter = {"Company": {"$in": ["Company A"]}}
 
     _, clean_dests = get_dests_from_mongo(mock_mongo, selected_departure, mongo_filter)
-
     assert len(clean_dests) == 1
-    assert clean_dests[0]["Name"] == "Destination A"
+    assert clean_dests[0] == "Destination A"
 
 
 def test_get_dests_from_redis(mock_redis):
@@ -48,7 +47,7 @@ def test_get_dests_from_redis(mock_redis):
     results = get_dests_from_redis(company="Company B")
 
     assert len(results) == 1
-    assert results[0]["json"]["Name"] == "Destination B"
+    assert json.loads(results[0]["json"])["Name"] == "Destination B"
 
 
 def test_get_data(mock_mongo, mock_redis):
@@ -64,11 +63,10 @@ def test_get_data(mock_mongo, mock_redis):
     raw_dests, _ = get_data(mock_mongo, selected_departure, search_filter)
 
     assert len(raw_dests) == 1
-    assert raw_dests[0]["Name"] == "Destination C"
+    assert raw_dests[0] == "Destination C"
 
     # Ensure that the data is cached in Redis after fetching from MongoDB
-    _ = f"destination:{str(raw_dests[0]['_id'])}"
-    assert mock_redis.json().set.call_count == 1  # Check if set was called once
-
-
-# Run the tests with: pytest test_database_module.py
+    mock_redis.json().set.assert_called_once()
+    args, kwargs = mock_redis.json().set.call_args
+    assert args[0] == f"destination:{str(raw_dests[0]['_id'])}"
+    assert json.loads(args[1]) == raw_dests[0]

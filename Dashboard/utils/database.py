@@ -8,8 +8,9 @@ from redis.commands.json.path import Path
 from redis.commands.search.field import TextField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
-from utils.ETL import clean_filter
-from utils.scraping import get_available_destinations
+
+from Dashboard.utils.ETL import clean_filter
+from Dashboard.utils.scraping import get_available_destinations
 
 # Connect to Redis using environment variables
 redis_host = os.getenv("REDIS_HOST", "localhost")
