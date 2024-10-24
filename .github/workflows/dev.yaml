@@ -55,10 +55,11 @@ jobs:
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
           sudo chmod 600 ~/.ssh/private.key
-
-      - name: Copy Docker Compose file to server
+      - name: check directory
         run: |
           ls
+      - name: Copy Docker Compose file to server
+        run: |
           sudo chmod 600 compose.yaml
           scp -i ~/.ssh/private.key -P 22 compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
 
