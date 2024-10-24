@@ -54,14 +54,16 @@ jobs:
         uses: actions/checkout@v2
 
 
-      - name: Create SSH key
+      - name: Saving SSH private key
         run: |
           mkdir -p ~/.ssh/
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
+
+
+      - name: Add SSH key to known hosts
+        run: |
           ssh-keyscan -t rsa -p 22 "${{ secrets.SERVER_IP }}" >> ~/.ssh/known_hosts
-          chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/private.key
-          chmod 644 ~/.ssh/known_hosts
+
 
 
 
