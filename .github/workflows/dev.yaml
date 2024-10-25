@@ -57,17 +57,17 @@ jobs:
       - name: Saving SSH private key
         run: |
           mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private.key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
 
 
       - name: Add SSH key to known hosts
         run: |
           chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/private.key
-          ssh-keygen -y -f ~/.ssh/private.key > ~/.ssh/public.pub
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
           ls -l ~/.ssh/
-          cat ~/.ssh/public.pub
-          ssh-copy-id -i ~/.ssh/public.pub hamza@192.168.100.71
+          cat ~/.ssh/id_rsa.pub
+          ssh-copy-id -i ~/.ssh/id_rsa.pub hamza@192.168.100.71
           ssh-keyscan -t rsa "192.168.100.71" >> ~/.ssh/known_hosts || echo "Failed to add host key"
           cat ~/.ssh/known_hosts
 
@@ -82,8 +82,8 @@ jobs:
 
       - name: Copy Docker Compose file to server
         run: |
-          scp -i ~/.ssh/private.key -P 22 ./compose/compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
+          scp -i ~/.ssh/id_rsa -P 22 ./compose/compose.yaml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/.
 
       - name: Run Docker Compose
         run: |
-          ssh -i ~/.ssh/private.key -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /. && docker compose up -d"
+          ssh -i ~/.ssh/id_rsa -p 22 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd /. && docker compose up -d"
