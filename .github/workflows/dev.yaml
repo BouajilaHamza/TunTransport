@@ -63,6 +63,8 @@ jobs:
       - name: Add SSH key to known hosts
         run: |
           chmod 600 ~/.ssh/private.key
+          sudo ssh-keygen -y -f ~/.ssh/private.key > ~/.ssh/public.key
+          ssh-copy-id -i ~/.ssh/id_rsa.pub hamza@192.168.100.71
           sudo ssh-keyscan -t rsa "192.168.100.71" >> ~/.ssh/known_hosts || echo "Failed to add host key"
           cat ~/.ssh/known_hosts
 
